@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout>
+				<Pattern>%d{HH:mm:ss.SSS} %-5p [%-13.13t] - %m %ex%n</Pattern>
+			</PatternLayout>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<!-- pattern layout actually uses location, so we need to include it -->
+		<AsyncLogger name="com.unwire" level="debug" additivity="false"
+			includeLocation="true">
+			<AppenderRef ref="Console" />
+		</AsyncLogger>
+		<AsyncRoot level="info" includeLocation="true">
+			<AppenderRef ref="Console" />
+		</AsyncRoot>
+	</Loggers>
+</Configuration>

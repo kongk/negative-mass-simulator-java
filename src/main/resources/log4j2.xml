@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="ERROR">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%level] %c - %m %ex%n</pattern>
+            </PatternLayout>
+        </Console>
+        <!-- Async Loggers will auto-flush in batches, so switch off immediateFlush. -->
+        <RollingRandomAccessFile name="businessEvent" fileName="log/shared/businessEvents.log"
+                                 immediateFlush="false" append="true" filePattern="log/shared/businessEvents-%d{yyyy-MM-dd}.log">
+            <RegexFilter regex=".*BusinessEvent.*" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout>
+                <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%level] %c - %m %ex%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="applicationEvent-shared" fileName="log/shared/application.log"
+                                 immediateFlush="false" append="true" filePattern="log/shared/application-%d{yyyy-MM-dd}.log">
+            <RegexFilter regex=".*ApplicationEvent.*" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout>
+                <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%level] %c - %m %ex%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="applicationEvent" fileName="log/messaging/application.log"
+                                 immediateFlush="false" append="true" filePattern="log/messaging/application-%d{yyyy-MM-dd}.log">
+            <RegexFilter regex=".*ApplicationEvent.*" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout>
+                <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%level] %c - %m %ex%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="external" fileName="log/external/external.log"
+                                 immediateFlush="false" append="true" filePattern="log/shared/external-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%level] %c - %m %ex%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <!-- Common/shared logs -->
+        <AsyncLogger name="com.unwire.messaging.incoming" level="INFO" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console" />
+        </AsyncLogger>
+
+        <AsyncLogger name="com.unwire.shared" level="INFO" additivity="false" includeLocation="true">
+            <AppenderRef ref="businessEvent" />
+            <AppenderRef ref="applicationEvent-shared" />
+        </AsyncLogger>
+
+        <AsyncLogger name="com.unwire.shared.actor.DeadLetterDeliveryStatusListener" level="DEBUG" additivity="false" includeLocation="true">
+            <AppenderRef ref="businessEvent" />
+            <AppenderRef ref="applicationEvent-shared" />
+        </AsyncLogger>
+
+        <!-- Messaging -->
+        <AsyncLogger name="com.unwire.messaging" level="INFO" additivity="false" includeLocation="true">
+            <AppenderRef ref="applicationEvent"/>
+            <AppenderRef ref="businessEvent"/>
+        </AsyncLogger>
+
+        <!-- Loggers for 3rd party frameworks-->
+        <AsyncLogger name="com.cloudhopper" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="org.springframework" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="org.hibernate" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="org.eclipse" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="org.apache" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="FATAL" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="com.netflix" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="external" />
+        </AsyncLogger>
+
+        <AsyncLogger name="akka" level="INFO" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console" />
+        </AsyncLogger>
+
+        <!-- Root -->
+        <AsyncRoot level="INFO" includeLocation="true">
+            <AppenderRef ref="Console" />
+        </AsyncRoot>
+
+    </Loggers>
+</Configuration>
