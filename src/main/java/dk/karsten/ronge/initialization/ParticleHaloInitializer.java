@@ -136,20 +136,4 @@ public class ParticleHaloInitializer {
         }
     }
 
-
-//            # For the negative masses (distributed as a uniformly distributed cube):
-//    x_neg = np.random.uniform((limit/2.0)-(cube_neg_width/2.0), (limit/2.0)+(cube_neg_width/2.0), num_neg_particles)
-//    y_neg = np.random.uniform((limit/2.0)-(cube_neg_width/2.0), (limit/2.0)+(cube_neg_width/2.0), num_neg_particles)
-//    z_neg = np.random.uniform((limit/2.0)-(cube_neg_width/2.0), (limit/2.0)+(cube_neg_width/2.0), num_neg_particles)
-//            # Combine the positive and negative masses together:
-//    x = np.concatenate((x, x_neg), axis=0)
-//    y = np.concatenate((y, y_neg), axis=0)
-//    z = np.concatenate((z, z_neg), axis=0)
-//    position = np.column_stack((x, y, z))
-//            # Set the type to float32, in order to reduce the memory requirements:
-//    position = position.astype(np.float32, copy=False)
-//    velocity = velocity.astype(np.float32, copy=False)
-//    mass = mass.astype(np.float32, copy=False)
-//            return position, velocity, mass
-
 }
