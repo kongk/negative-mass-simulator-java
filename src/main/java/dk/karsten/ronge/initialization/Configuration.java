@@ -69,7 +69,7 @@ public class Configuration {
                 .simType(HALO)
                 .G(1.0f).epsilon(0.07f).limit(80000).radius(4).num_pos_particles(500).num_neg_particles(4500)
                 .time_steps(200).chunks(1)
-                .M_pos(0.01f).M_neg(-3.0f).cube_neg_width(250)
+                .M_pos(1.0f).M_neg(-3.0f).cube_neg_width(250)
                 .a_scale(0.5f).gauss_velocity_comp(0.3f).build();
     }
 
