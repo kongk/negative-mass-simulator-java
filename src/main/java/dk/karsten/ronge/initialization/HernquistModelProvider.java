@@ -8,10 +8,10 @@ import org.nd4j.linalg.ops.transforms.Transforms;
  */
 public class HernquistModelProvider {
     public INDArray hernquist_ppf(INDArray r, float a_scale) {
+        //    ppf = (a_scale-(a_scale*r)+np.sqrt(a_scale**2 - (r*(a_scale**2))))/r
         final double a_scale_sqrd = Math.pow(a_scale, 2.0f);
         INDArray sqr = r.mul(a_scale_sqrd).neg().add(a_scale_sqrd);
-        INDArray ppf = r.mul(a_scale).neg().add(a_scale).add(Transforms.sqrt(sqr)).div(r);
-        return ppf;
+        return r.mul(a_scale).neg().add(a_scale).add(Transforms.sqrt(sqr)).div(r);
     }
 
     public INDArray hernquist_vcirc(INDArray r, float a_scale, INDArray m, float G) {

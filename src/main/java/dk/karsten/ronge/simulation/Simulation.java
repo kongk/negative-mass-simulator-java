@@ -30,7 +30,6 @@ public class Simulation {
 
     public void run_nbody(ParticlesDefinition particlesDefinition) {
         int timeSteps = basicParameters.time_steps;
-
         int index = 0;
         final File indexFile = new File("DATA/index.txt");
         if (indexFile.exists()) {
@@ -61,23 +60,41 @@ public class Simulation {
         if (iteratedParticlesDefinition == null) {
             iteratedParticlesDefinition = particlesDefinition;
         }
-        final float aFloat = iteratedParticlesDefinition.getPosition().getFloat(1, 0);
+        //final float aFloat = iteratedParticlesDefinition.getPosition().getFloat(1, 0);
         runIterations(timeSteps, index, indexFile, iteratedParticlesDefinition);
-        final ParticlesDefinition latestSavedParticlesDefinition = getLatestSavedParticlesDefinition(200);
-//        final ParticlesDefinition latestSavedParticlesDefinition = getLatestSavedParticlesDefinition(basicParameters.time_steps);
+        //       final ParticlesDefinition latestSavedParticlesDefinition = getLatestSavedParticlesDefinition(60);
+        final ParticlesDefinition latestSavedParticlesDefinition = getLatestSavedParticlesDefinition(basicParameters.time_steps);
         try {
             final ImageMaker imageMaker = new ImageMaker(basicParameters, latestSavedParticlesDefinition.getPosition());
-//            final IndexProvider indexProvider = new IndexProvider(basicParameters.time_steps);
-//            final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-//            scheduledExecutorService.scheduleWithFixedDelay(() -> {
-//                imageMaker.showPositions(getLatestSavedParticlesDefinition(indexProvider.next()).getPosition());
-//            }, 1000, 200, TimeUnit.MILLISECONDS);
+
+            final IndexProvider indexProvider = new IndexProvider(basicParameters.time_steps);
+            final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+            scheduledExecutorService.scheduleWithFixedDelay(() ->
+                    imageMaker.showPositions(
+                            getLatestSavedParticlesDefinition(indexProvider.next()).getPosition()
+                    ), 1000, 500, TimeUnit.MILLISECONDS
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    class IndexProvider {
+    ParticlesDefinition getLatestSavedParticlesDefinition(int index) {
+        if (index > -1) {
+            try {
+                System.out.println("Position for index=" + index);
+                final INDArray mass = Nd4j.read(new FileInputStream("DATA/mass_.iar"));
+                final INDArray velocities = Nd4j.read(new FileInputStream("DATA/velocity_" + index + ".iar"));
+                final INDArray positions = Nd4j.read(new FileInputStream("DATA/position_" + index + ".iar"));
+                return ParticlesDefinition.builder().mass(mass).position(positions).velocity(velocities).build();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    static class IndexProvider {
         volatile int i = 0;
         final int max;
 
@@ -86,8 +103,8 @@ public class Simulation {
         }
 
         int next() {
-            i += 4;
-            i = i >max ? 0 : i;
+            i += 2;
+            i = i > max ? 0 : i;
             return i;
         }
     }
@@ -97,7 +114,10 @@ public class Simulation {
         while (timeSteps > 0) {
             index++;
             System.out.println(new Date() + " ----- Iteration no. " + (index) + " of " + basicParameters.time_steps + " -----");
-            final INDArray newVelocities = update_velocities(iteratedParticlesDefinition);
+
+//            final INDArray newVelocities = updateVelocities(iteratedParticlesDefinition);
+            final INDArray newVelocities = updateVelocitiesInChunks(iteratedParticlesDefinition);
+
             //Update positions, can just add velocities if assumed that one time step is one unit of time
             final INDArray newPositions = iteratedParticlesDefinition.getPosition().add(newVelocities);
 
@@ -120,85 +140,44 @@ public class Simulation {
         System.out.println("Done with simulation of " + basicParameters.time_steps + " iterations.");
     }
 
-    ParticlesDefinition getLatestSavedParticlesDefinition(int index) {
-        if (index > -1) {
-            try {
-                final INDArray mass = Nd4j.read(new FileInputStream("DATA/mass_.iar"));
-                final INDArray velocities = Nd4j.read(new FileInputStream("DATA/velocity_" + index + ".iar"));
-                final INDArray positions = Nd4j.read(new FileInputStream("DATA/position_" + index + ".iar"));
-                return ParticlesDefinition.builder().mass(mass).position(positions).velocity(velocities).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-
-    INDArray update_velocities(ParticlesDefinition particlesDefinition) {
+    INDArray updateVelocities(ParticlesDefinition particlesDefinition) {
         final int numberOfChunks = basicParameters.chunks;
-//        final ExecutorService executorService = Executors.newFixedThreadPool(numberOfChunks);
-//        CountDownLatch countDownLatch = new CountDownLatch(numberOfChunks);
         System.out.println(new Date() + " Starting simulation with " + basicParameters.numTotalParticles() + " particles in " + numberOfChunks + " chunks");
-//        final ConcurrentHashMap<Integer, INDArray> simulationResultMap = new ConcurrentHashMap<>();
         long start = System.currentTimeMillis();
         int j = 0;
-//        for (int i = 0; i < numberOfChunks; i++) {
-//            final int j = i;
-//            executorService.submit(() -> {
-//                System.out.println(new Date() + " Chunk no " + j + " starting with from-to = " + basicParameters.chunkFrom(j) + " - " + basicParameters.chunkTo(j));
-                final INDArray newVelocity = update_velocities(particlesDefinition, basicParameters.chunkFrom(j), basicParameters.chunkTo(j));
-//                simulationResultMap.put(j, newVelocity);
-//                System.out.println(new Date() + " Chunk no " + j + " done");
-//                countDownLatch.countDown();
-//            });
-//        }
-//        try {
-//            countDownLatch.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        final INDArray newVelocity = updateVelocities(particlesDefinition, basicParameters.chunkFrom(j), basicParameters.chunkTo(j));
         System.out.println(new Date() + " Calculation Done. Time taken=" + (System.currentTimeMillis() - start) + "ms");
-        //concat the results:
-//        INDArray result = null;
-//        for (int i = 0; i < numberOfChunks; i++) {
-//            if (i == 0) {
-//                result = simulationResultMap.get(i);
-//            } else {
-//                result = Nd4j.vstack(result, simulationResultMap.get(i));
-//            }
-//        }
-//        System.out.println(new Date() + " Done. Time taken=" + (System.currentTimeMillis() - start) + "ms");
-//        return result;
+
         return newVelocity;
     }
 
 
-    INDArray update_velocities(ParticlesDefinition particlesDefinition, int from, int to) {
+    INDArray updateVelocities(ParticlesDefinition particlesDefinition, int from, int to) {
         INDArray newVelocity = Nd4j.create(to - from, 3);
         int index = 0;
         final INDArray position = particlesDefinition.getPosition();
         final INDArray mass = particlesDefinition.getMass();
+        INDArray coef = mass.mul(-basicParameters.G);
         final INDArray velocity = particlesDefinition.getVelocity();
+
         for (int i = from; i < to; i++) {
+            if (i % 2000 == 0) System.out.println("Doing #" + i);
             INDArray dx = position.getColumn(0).getScalar(i).addColumnVector(position.getColumn(0).neg());
-//            INDArray dy = position.getColumn(1).getScalar(i).addColumnVector(position.getColumn(1).neg());
-//            INDArray dz = position.getColumn(2).getScalar(i).addColumnVector(position.getColumn(2).neg());
-//            INDArray dx = position.distance2(position);
             INDArray dy = position.getColumn(1).getScalar(i).addColumnVector(position.getColumn(1).neg());
             INDArray dz = position.getColumn(2).getScalar(i).addColumnVector(position.getColumn(2).neg());
-
             INDArray r2 = pow(dx, 2).add(pow(dy, 2).add(pow(dz, 2).add(Math.pow(basicParameters.epsilon, 2.0d))));
-            INDArray coef = mass.mul(-basicParameters.G);
-            INDArray ax = dx.mul(coef.transpose());
-            INDArray ay = dy.mul(coef.transpose());
-            INDArray az = dz.mul(coef.transpose());
-            INDArray ax_scaled = ax.div(r2);
+
+            INDArray ax = dx.mul(coef);
+            INDArray ay = dy.mul(coef);
+            INDArray az = dz.mul(coef);
+
+            INDArray ax_scaled = ax.div(r2);//x-direction velocity squared
             INDArray ay_scaled = ay.div(r2);
             INDArray az_scaled = az.div(r2);
-            final INDArray total_ax = ax_scaled.sum(0);
-            final INDArray total_ay = ay_scaled.sum(0);
-            final INDArray total_az = az_scaled.sum(0);
+
+            final INDArray total_ax = ax_scaled.sum(1);
+            final INDArray total_ay = ay_scaled.sum(1);
+            final INDArray total_az = az_scaled.sum(1);
             final INDArray new_vel_x = velocity.getColumn(0).getScalar(i).add(total_ax);
             final INDArray new_vel_y = velocity.getColumn(1).getScalar(i).add(total_ay);
             final INDArray new_vel_z = velocity.getColumn(2).getScalar(i).add(total_az);
@@ -209,4 +188,45 @@ public class Simulation {
         }
         return newVelocity;
     }
+
+    final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+
+    INDArray updateVelocitiesInChunks(ParticlesDefinition particlesDefinition) {
+        final int numberOfChunks = basicParameters.chunks;
+
+        CountDownLatch countDownLatch = new CountDownLatch(numberOfChunks);
+        System.out.println(new Date() + " Starting simulation with " + basicParameters.numTotalParticles() + " particles in " + numberOfChunks + " chunks");
+        final ConcurrentHashMap<Integer, INDArray> simulationResultMap = new ConcurrentHashMap<>();
+        long start = System.currentTimeMillis();
+
+        for (int i = 0; i < numberOfChunks; i++) {
+            final int j = i;
+            executorService.submit(() -> {
+                System.out.println(new Date() + " Chunk no " + j + " starting with from-to = " + basicParameters.chunkFrom(j) + " - " + basicParameters.chunkTo(j));
+                final INDArray newVelocity = updateVelocities(particlesDefinition, basicParameters.chunkFrom(j), basicParameters.chunkTo(j));
+                simulationResultMap.put(j, newVelocity);
+                System.out.println(new Date() + " Chunk no " + j + " done");
+                countDownLatch.countDown();
+            });
+        }
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(new Date() + " Calculation Done. Time taken=" + (System.currentTimeMillis() - start) + "ms");
+        //concat the results:
+        INDArray result = null;
+        for (int i = 0; i < numberOfChunks; i++) {
+            if (i == 0) {
+                result = simulationResultMap.get(i);
+            } else {
+                result = Nd4j.vstack(result, simulationResultMap.get(i));
+            }
+        }
+        System.out.println(new Date() + " Done. Time taken=" + (System.currentTimeMillis() - start) + "ms");
+        return result;
+    }
+
+
 }

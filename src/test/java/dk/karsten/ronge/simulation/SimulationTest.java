@@ -2,17 +2,10 @@ package dk.karsten.ronge.simulation;
 
 import dk.karsten.ronge.initialization.Configuration;
 import dk.karsten.ronge.initialization.ParticleHaloInitializer;
-import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -23,20 +16,24 @@ public class SimulationTest {
 
     @Test
     @Ignore
-    public void runUpdate_velocities() throws Exception {
+    public void runUpdate_velocities() {
 
         Configuration.BasicParameters defaultHaloParameters = new Configuration().createDefaultHaloParameters();
         ParticleHaloInitializer particleHaloInitializer = new ParticleHaloInitializer(defaultHaloParameters);
         final Configuration.ParticlesDefinition particlesDefinition = particleHaloInitializer.haloInit();
         final Simulation simulation = new Simulation(defaultHaloParameters);
 
-        simulation.update_velocities(particlesDefinition);
+        simulation.updateVelocities(particlesDefinition);
     }
 
     @Test
-    public void testUpdate_velocities() throws Exception {
+    public void testUpdate_velocities(){
 
-        Configuration.BasicParameters defaultHaloParameters = new Configuration().createDefaultHaloParameters();
+        Configuration.BasicParameters defaultHaloParameters = new Configuration()
+                .createBasicHaloParametersBuilder()
+                .num_pos_particles(2)
+                .num_neg_particles(3)
+                .build();
         final INDArray mass = Nd4j.create(1, 5);
         mass.put(0, 0, 0.5f);
         mass.put(0, 1, 0.5f);
@@ -84,7 +81,9 @@ public class SimulationTest {
 
         final Simulation simulation = new Simulation(defaultHaloParameters);
 
-        simulation.update_velocities(particlesDefinition);
+        INDArray updatedVelocities = simulation.updateVelocities(particlesDefinition);
+        assertEquals(0.2500f, updatedVelocities.getFloat(0, 0), 0.0001f);
+        assertEquals(0.9487f, updatedVelocities.getFloat(0, 1), 0.0001f);
     }
 
 

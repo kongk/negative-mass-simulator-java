@@ -9,21 +9,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.java.version>1.8</project.java.version>
+        <project.java.version>21</project.java.version>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
     </properties>
 
 
 
     <dependencies>
-        <!-- Copy this into your own projects (without the comment block around it), for CPU operations-->
-        <!--
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-native-platform</artifactId>
-            <version>${nd4j.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.github.sh0nk</groupId>
             <artifactId>matplotlib4j</artifactId>
@@ -31,9 +23,15 @@
         </dependency>
 
         <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.3.7</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jzy3d</groupId>
-            <artifactId>jzy3d-api</artifactId>
-            <version>1.0.0</version>
+            <artifactId>jzy3d-everything</artifactId>
+            <version>2.1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -46,33 +44,45 @@
             <artifactId>opencsv</artifactId>
             <version>3.7</version>
         </dependency>
-        <!-- Copy this into your own projects (without the comment block around it), for CUDA (NVIDIA GPU) operations-->
 
+        <!-- Copy this into your own projects (without the comment block around it), for CUDA (NVIDIA GPU) operations-->
         <dependency>
             <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-cuda-9.2-platform</artifactId>
-            <version>1.0.0-beta3</version>
+            <artifactId>nd4j-native</artifactId>
+            <version>1.0.0-M2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native</artifactId>
+            <version>1.0.0-M2.1</version>
+            <classifier>macosx-arm64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>openblas</artifactId>
+            <version>0.3.21-1.5.8</version>
+            <classifier>macosx-arm64</classifier>
         </dependency>
 
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-api</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.0.0-M2.1</version>
         </dependency>
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-native-platform</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.0.0-M2.1</version>
         </dependency>
         <dependency>
             <groupId>org.datavec</groupId>
             <artifactId>datavec-api</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.0.0-M2.1</version>
         </dependency>
         <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-core</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.0.0-M2.1</version>
         </dependency>
         <dependency>
             <groupId>org.hdfgroup</groupId>
@@ -92,13 +102,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.2</version>
+            <version>1.18.42</version>
+            <scope>compile</scope>
         </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -115,13 +126,13 @@
     <build>
         <finalName>negative-mass-simulator</finalName>
         <!--<plugins>-->
-            <!--&lt;!&ndash; Assemble an Unwire Akka Archive zip &ndash;&gt;-->
+            <!--&lt;!&ndash; Assemble an Archive zip &ndash;&gt;-->
             <!--<plugin>-->
                 <!--<artifactId>maven-assembly-plugin</artifactId>-->
                 <!--<version>2.3</version>-->
                 <!--<configuration>-->
                     <!--<descriptors>-->
-                        <!--<descriptor>unwire_akka_archive_assembly.xml</descriptor>-->
+                        <!--<descriptor>archive_assembly.xml</descriptor>-->
                     <!--</descriptors>-->
                 <!--</configuration>-->
                 <!--<executions>-->
@@ -151,19 +162,25 @@
     </build>
     <repositories>
         <repository>
+            <id>mvnrepository</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
             <id>maven2-central</id>
-            <url>http://central.maven.org/maven2/</url>
+            <url>https://central.maven.org/maven2/</url>
         </repository>
             <repository>
                 <id>jzy3d-snapshots</id>
                 <name>Jzy3d Snapshots</name>
-                <url>http://maven.jzy3d.org/snapshots</url>
+                <url>https://maven.jzy3d.org/snapshots</url>
             </repository>
             <repository>
                 <id>jzy3d-releases</id>
-                <name>Jzy3d Snapshots</name>
-                <url>http://maven.jzy3d.org/releases</url>
+                <name>Jzy3d Releases</name>
+                <url>https://maven.jzy3d.org/releases</url>
             </repository>
+
+
     </repositories>
 
 </project>
