@@ -63,8 +63,8 @@ public class Configuration {
     //TODO: These could be read from properties file
     public BasicParameters createDefaultHaloParameters() {
         return createBasicHaloParametersBuilder()
-                .num_pos_particles(2000)
-                .num_neg_particles(18000)
+                .num_pos_particles(5000)
+                .num_neg_particles(45000)
                 .build();
     }
 
