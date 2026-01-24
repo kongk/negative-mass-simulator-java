@@ -48,7 +48,9 @@ public class ParticleHaloInitializer {
     public ParticlesDefinition haloInit() {
         Mass mass = massInit();
         //Initially set all velocities to zero:
+        //velocity = 0.0*np.random.randn(num_tot_particles, 3)
         final INDArray velocity = Nd4j.randn(haloParameters.numTotalParticles(), 3).mul(0.0f);
+        //r = hernquist_ppf(np.random.uniform(0, 1, num_pos_particles), a_scale)
         final INDArray radius = hernquistModelProvider.hernquist_ppf(Nd4j.rand(1, haloParameters.num_pos_particles), haloParameters.a_scale);
         //Must vel_0 be inside the loop?? No. It would come out with the same values in every iteration.
         final float[] vel_0 = hernquistModelProvider.hernquist_vcirc(radius, haloParameters.a_scale, mass.mass_pos, haloParameters.G).getRow(0).toFloatVector();
@@ -100,10 +102,12 @@ public class ParticleHaloInitializer {
     }
 
     INDArray randomPhiDist() {
+        //phi = np.random.uniform(0, 2*np.pi, num_pos_particles)
         return Nd4j.rand(1, haloParameters.num_pos_particles).mul(2 * Math.PI);
     }
 
     INDArray randomThetaDist() {
+        //theta = np.arccos(np.random.uniform(-1, 1, num_pos_particles))
         return Transforms.acos(randomOneRowBetweenMinusOneAndOne(haloParameters.num_pos_particles));
     }
 
@@ -119,7 +123,7 @@ public class ParticleHaloInitializer {
     }
 
 
-    class Mass {
+    public static class Mass {
         final INDArray mass_pos, mass_neg;
 
         Mass(INDArray mass_pos, INDArray mass_neg) {

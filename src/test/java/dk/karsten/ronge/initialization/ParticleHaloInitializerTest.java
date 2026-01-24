@@ -15,12 +15,16 @@ public class ParticleHaloInitializerTest {
 
     @Before
     public void initTest() {
-        defaultHaloParameters = new Configuration().createDefaultHaloParameters();
+        defaultHaloParameters = new Configuration()
+                .createBasicHaloParametersBuilder()
+                .num_pos_particles(5000)
+                .num_neg_particles(45000)
+                .build();
         particleHaloInitializer = new ParticleHaloInitializer(defaultHaloParameters);
     }
 
     @Test
-    public void massInit() throws Exception {
+    public void massInit(){
         final ParticleHaloInitializer.Mass mass = particleHaloInitializer.massInit();
         final INDArray totalMass = mass.totalMass();
         assertEquals(1, totalMass.rows());
@@ -39,7 +43,7 @@ public class ParticleHaloInitializerTest {
     }
 
     @Test
-    public void velocityInit() throws Exception {
+    public void velocityInit(){
         final Configuration.ParticlesDefinition particlesDefinition = particleHaloInitializer.haloInit();
         final INDArray velocity = particlesDefinition.velocity;
         final INDArray position = particlesDefinition.position;
@@ -63,7 +67,7 @@ public class ParticleHaloInitializerTest {
     }
 
     @Test
-    public void positionInit() throws Exception {
+    public void positionInit(){
         final Configuration.ParticlesDefinition particlesDefinition = particleHaloInitializer.haloInit();
         final INDArray position = particlesDefinition.position;
 
