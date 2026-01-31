@@ -198,6 +198,7 @@ public class Simulation {
         final INDArray mass = particlesDefinition.getMass();
         final INDArray coef = mass.mul(-basicParameters.G);
         final INDArray velocity = particlesDefinition.getVelocity();
+        final var e = Math.pow(basicParameters.epsilon, 2.0d);
 
         for (int i = from; i < to; i++) {
             if (i % 2000 == 0) System.out.println("Doing #" + i);
@@ -211,8 +212,12 @@ public class Simulation {
                     INDArray dx = scalarX.addColumnVector(px);
                     INDArray dy = scalarY.addColumnVector(py);
                     INDArray dz = scalarZ.addColumnVector(pz);
-                    INDArray r2 = pow(dx, 2).add(pow(dy, 2).add(pow(dz, 2).add(Math.pow(basicParameters.epsilon, 2.0d))));
-
+                    INDArray r2x = pow(dx, 2);
+                    INDArray r2y = pow(dy, 2);
+                    INDArray r2z = pow(dz, 2);
+                    INDArray r2ze = r2z.add(e);
+                    INDArray r2yze = r2y.add(r2ze);
+                    INDArray r2 = r2x.add(r2yze);
                     INDArray ax = dx.mul(coef);
                     INDArray ay = dy.mul(coef);
                     INDArray az = dz.mul(coef);

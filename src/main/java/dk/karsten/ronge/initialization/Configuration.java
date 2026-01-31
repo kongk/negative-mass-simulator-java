@@ -72,7 +72,7 @@ public class Configuration {
         return BasicParameters.builder()
                 .simType(HALO)
                 .G(1.0f).epsilon(0.07f).limit(80000).radius(4)
-                .time_steps(12).chunks(4)
+                .time_steps(100).chunks(4)
                 .M_pos(1.0f).M_neg(-3.0f).cube_neg_width(200)
                 .a_scale(1.0f).gauss_velocity_comp(0.3f);
     }
