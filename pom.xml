@@ -14,7 +14,6 @@
     </properties>
 
 
-
     <dependencies>
         <dependency>
             <groupId>com.github.sh0nk</groupId>
@@ -31,9 +30,9 @@
         <dependency>
             <groupId>org.jzy3d</groupId>
             <artifactId>jzy3d-everything</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
+            <version>2.2.1</version>
+            <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout</artifactId>
@@ -45,7 +44,7 @@
             <version>3.7</version>
         </dependency>
 
-        <!-- Copy this into your own projects (without the comment block around it), for CUDA (NVIDIA GPU) operations-->
+        <!-- For CUDA (NVIDIA GPU) operations-->
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-native</artifactId>
@@ -126,25 +125,25 @@
     <build>
         <finalName>negative-mass-simulator</finalName>
         <!--<plugins>-->
-            <!--&lt;!&ndash; Assemble an Archive zip &ndash;&gt;-->
-            <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>2.3</version>-->
-                <!--<configuration>-->
-                    <!--<descriptors>-->
-                        <!--<descriptor>archive_assembly.xml</descriptor>-->
-                    <!--</descriptors>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>make-assembly</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+        <!--&lt;!&ndash; Assemble an Archive zip &ndash;&gt;-->
+        <!--<plugin>-->
+        <!--<artifactId>maven-assembly-plugin</artifactId>-->
+        <!--<version>2.3</version>-->
+        <!--<configuration>-->
+        <!--<descriptors>-->
+        <!--<descriptor>archive_assembly.xml</descriptor>-->
+        <!--</descriptors>-->
+        <!--</configuration>-->
+        <!--<executions>-->
+        <!--<execution>-->
+        <!--<id>make-assembly</id>-->
+        <!--<phase>package</phase>-->
+        <!--<goals>-->
+        <!--<goal>single</goal>-->
+        <!--</goals>-->
+        <!--</execution>-->
+        <!--</executions>-->
+        <!--</plugin>-->
         <!--</plugins>-->
         <pluginManagement>
             <plugins>
@@ -169,16 +168,16 @@
             <id>maven2-central</id>
             <url>https://central.maven.org/maven2/</url>
         </repository>
-            <repository>
-                <id>jzy3d-snapshots</id>
-                <name>Jzy3d Snapshots</name>
-                <url>https://maven.jzy3d.org/snapshots</url>
-            </repository>
-            <repository>
-                <id>jzy3d-releases</id>
-                <name>Jzy3d Releases</name>
-                <url>https://maven.jzy3d.org/releases</url>
-            </repository>
+        <repository>
+            <id>jzy3d-snapshots</id>
+            <name>Jzy3d Snapshots</name>
+            <url>https://maven.jzy3d.org/snapshots</url>
+        </repository>
+        <repository>
+            <id>jzy3d-releases</id>
+            <name>Jzy3d Releases</name>
+            <url>https://maven.jzy3d.org/releases</url>
+        </repository>
 
 
     </repositories>
